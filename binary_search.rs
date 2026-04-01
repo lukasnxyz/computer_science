@@ -41,6 +41,20 @@ fn bsearch_f<T: Ord>(
   }
 }
 
+fn bsearch_ff<T: Ord>(vals: &[T], t: &T) -> Option<usize> {
+  let mid = vals.len() / 2;
+  match vals[mid].cmp(t) {
+    Ordering::Equal =>
+      Some(mid),
+    Ordering::Less =>
+      bsearch_ff(&vals[mid+1..], t).map(|i| mid + 1 + i),
+    Ordering::Greater => {
+      if mid == 0 { return None; }
+      bsearch_ff(&vals[0..mid], t)
+    }
+  }
+}
+
 #[cfg(test)]
 mod tests {
   use super::*;
@@ -76,6 +90,25 @@ mod tests {
 
     let vals = &[48,59,67,69,73,99,105];
     let pos = bsearch_f(vals, &2, 0, vals.len());
+    assert_eq!(pos, None);
+  }
+
+  #[test]
+  fn test_ff_version() {
+    let vals = &[1,2,3,4,5,8,9];
+    let pos = bsearch_ff(vals, &8);
+    assert_eq!(pos, Some(5));
+
+    let vals = &[48,59,67,69,73,99,105];
+    let pos = bsearch_ff(vals, &48);
+    assert_eq!(pos, Some(0));
+
+    let vals = &[48,59,67,69,73,99,105];
+    let pos = bsearch_ff(vals, &105);
+    assert_eq!(pos, Some(6));
+
+    let vals = &[48,59,67,69,73,99,105];
+    let pos = bsearch_ff(vals, &2);
     assert_eq!(pos, None);
   }
 }
