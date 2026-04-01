@@ -1,5 +1,7 @@
 use std::cmp::Ordering;
 
+// O(log n)
+
 fn bsearch<T: Ord>(vals: &[T], target: &T) -> Option<usize> {
   let mut left = 0;
   let mut right = vals.len();
