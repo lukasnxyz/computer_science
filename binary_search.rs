@@ -27,9 +27,12 @@ fn bsearch_f<T: Ord>(
   } else {
     let mid = left + (right - left) / 2;
     match vals[mid].cmp(target) {
-      Ordering::Equal => Some(mid),
-      Ordering::Less => bsearch_f(vals, target, mid+1, right),
-      Ordering::Greater => bsearch_f(vals, target, left, mid-1),
+      Ordering::Equal =>
+        Some(mid),
+      Ordering::Less =>
+        bsearch_f(vals, target, mid+1, right),
+      Ordering::Greater =>
+        bsearch_f(vals, target, left, mid-1),
     }
   }
 }

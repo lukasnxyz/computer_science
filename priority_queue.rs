@@ -1,9 +1,9 @@
 #[derive(Debug, Clone)]
-pub struct BinaryHeap<T> { // max heap
+pub struct PriorityQueue<T> {
   pub data: Vec<T>,
 }
 
-impl<T: Ord + Clone> BinaryHeap<T> {
+impl<T: Ord + Clone> PriorityQueue<T> {
   pub fn from_vec(data: Vec<T>) -> Self {
     let len = data.len();
     let mut heap = Self { data };
@@ -117,14 +117,14 @@ mod tests {
 
   #[test]
   fn test_bheap_sift() {
-    let bheap = BinaryHeap::from_vec(vec![3, 5, 1, 29, 3, 59, 6, 9, 2]);
+    let bheap = PriorityQueue::from_vec(vec![3, 5, 1, 29, 3, 59, 6, 9, 2]);
     assert!(!bheap.data.is_empty());
     assert!(is_max_heap(&bheap.data));
   }
 
   #[test]
   fn test_bheap_pop() {
-    let mut bheap = BinaryHeap::from_vec(vec![34, 5, 46, 1, 23, 8, 34, 69, 67]);
+    let mut bheap = PriorityQueue::from_vec(vec![34, 5, 46, 1, 23, 8, 34, 69, 67]);
     assert!(!bheap.data.is_empty());
     assert!(is_max_heap(&bheap.data));
     let popped = bheap.pop();
@@ -134,7 +134,7 @@ mod tests {
 
   #[test]
   fn test_heap_sort() {
-    let mut bheap = BinaryHeap::from_vec(vec![34, 5, 46, 1, 23, 8, 34, 69, 67]);
+    let mut bheap = PriorityQueue::from_vec(vec![34, 5, 46, 1, 23, 8, 34, 69, 67]);
     assert!(!bheap.data.is_empty());
     assert!(is_max_heap(&bheap.data));
     let sorted = bheap.heap_sort();
