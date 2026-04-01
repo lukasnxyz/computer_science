@@ -24,6 +24,7 @@ fn bsearch_f<T: Ord>(
   left: usize,
   right: usize
 ) -> Option<usize> {
+  if vals.len() == 0 { return None; }
   if left > right {
     None
   } else {
@@ -31,10 +32,12 @@ fn bsearch_f<T: Ord>(
     match vals[mid].cmp(target) {
       Ordering::Equal =>
         Some(mid),
-      Ordering::Less =>
-        bsearch_f(vals, target, mid+1, right),
+      Ordering::Less => {
+        if mid == usize::MAX { return None; }
+        bsearch_f(vals, target, mid+1, right)
+      }
       Ordering::Greater => {
-        if mid == 0 { return None; }
+        if mid == usize::MIN { return None; }
         bsearch_f(vals, target, left, mid-1)
       }
     }
@@ -42,16 +45,12 @@ fn bsearch_f<T: Ord>(
 }
 
 fn bsearch_ff<T: Ord>(vals: &[T], t: &T) -> Option<usize> {
+  if vals.is_empty() { return None; }
   let mid = vals.len() / 2;
   match vals[mid].cmp(t) {
-    Ordering::Equal =>
-      Some(mid),
-    Ordering::Less =>
-      bsearch_ff(&vals[mid+1..], t).map(|i| mid + 1 + i),
-    Ordering::Greater => {
-      if mid == 0 { return None; }
-      bsearch_ff(&vals[0..mid], t)
-    }
+    Ordering::Equal => Some(mid),
+    Ordering::Less => bsearch_ff(&vals[mid+1..], t).map(|i| mid + 1 + i),
+    Ordering::Greater => bsearch_ff(&vals[0..mid], t),
   }
 }
 
@@ -91,6 +90,10 @@ mod tests {
     let vals = &[48,59,67,69,73,99,105];
     let pos = bsearch_f(vals, &2, 0, vals.len());
     assert_eq!(pos, None);
+
+    let vals = &[];
+    let pos = bsearch_f(vals, &2, 0, vals.len());
+    assert_eq!(pos, None);
   }
 
   #[test]
@@ -108,6 +111,10 @@ mod tests {
     assert_eq!(pos, Some(6));
 
     let vals = &[48,59,67,69,73,99,105];
+    let pos = bsearch_ff(vals, &2);
+    assert_eq!(pos, None);
+
+    let vals = &[];
     let pos = bsearch_ff(vals, &2);
     assert_eq!(pos, None);
   }
