@@ -20,18 +20,25 @@ fn on_disk_sort(fs: (&str, &str)) -> Result<(), Box<dyn Error>> {
   for line in lines {
     let line = line?;
     let num: usize = line.parse()?;
-    if num > universe {
+    if num >= universe {
       return Err("number greater than max".into());
     }
+
     let word = num / 64;
     let bit = num % 64;
-    bitmap[word] |= 1u64 << bit;
+    let mask = 1u64 << bit;
+    if bitmap[word] & mask == 0 {
+      bitmap[word] |= mask;
+    } else {
+      return Err("found duplicates!".into());
+    }
   }
 
   let f_sorted = File::create(sorted_f)?;
   let mut writer = BufWriter::new(f_sorted);
 
-  for (w, &mut mut word) in bitmap.iter_mut().enumerate() {
+  for (w, word_ref) in bitmap.iter_mut().enumerate() {
+    let mut word = *word_ref;
     while word != 0 {
       let bit = word.trailing_zeros() as usize;
       let val = w * 64 + bit;
@@ -67,5 +74,10 @@ mod tests {
     let file_names = ("numbers.txt", "numbers_sorted.txt");
     on_disk_sort(file_names).unwrap();
     assert!(check_sorted_file(file_names.1).unwrap());
+
+    let l = BufReader::new(File::open(file_names.1).unwrap())
+      .lines()
+      .count();
+    assert_eq!(l, 40);
   }
 }
