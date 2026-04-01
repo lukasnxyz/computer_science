@@ -33,8 +33,10 @@ fn bsearch_f<T: Ord>(
         Some(mid),
       Ordering::Less =>
         bsearch_f(vals, target, mid+1, right),
-      Ordering::Greater =>
-        bsearch_f(vals, target, left, mid-1),
+      Ordering::Greater => {
+        if mid == 0 { return None; }
+        bsearch_f(vals, target, left, mid-1)
+      }
     }
   }
 }
@@ -71,5 +73,9 @@ mod tests {
     let vals = &[48,59,67,69,73,99,105];
     let pos = bsearch_f(vals, &105, 0, vals.len());
     assert_eq!(pos, Some(6));
+
+    let vals = &[48,59,67,69,73,99,105];
+    let pos = bsearch_f(vals, &2, 0, vals.len());
+    assert_eq!(pos, None);
   }
 }
